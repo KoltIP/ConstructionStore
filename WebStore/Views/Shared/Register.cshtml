@@ -1,0 +1,117 @@
+﻿@model WebStore.Models.UserModel
+@{
+    Layout = Layout;
+}
+
+<!DOCTYPE>
+
+<html>
+<head>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/login.css" />
+</head>
+<body>
+    <div class="container">
+    </div>
+    <div class="row">
+        <div class="col"></div>
+        <div class="col">
+            @if (Model == null)
+            {
+                <form class="login-box">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="exampleInputSurName" name="surName" placeholder="Фамилия">
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="exampleInputName" name="name" placeholder="Имя">
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="exampleInputMidleName" name="middleName" placeholder="Отчество">
+                    </div>
+                    <div class="mb-3">
+                        <input type="tel" class="form-control" id="exampleInputTelephone" name="telephone" placeholder="Номер телефона">
+                    </div>
+                    <div class="mb-3">
+                        <input type="email" class="form-control" id="exampleInputEmail1" name="email" placeholder="Email">
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="exampleInputLogin" name="login" placeholder="Логин">
+                    </div>
+                    <div class="mb-3">
+                        <input type="password" id="inputPassword5" class="form-control" aria-describedby="passwordHelpBlock" name="password" placeholder="Пароль">
+                        <div id="passwordHelpBlock" class="form-text">
+                            Ваш пароль должен состоять из 8-20 символов, содержать буквы и цифры и не должен содержать пробелов, специальных символов или эмодзи.
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <button asp-controller="Registration" formmethod="post" type="submit" class="btn btn-primary">Зарегистрироваться</button>
+                        <div id="registerHelpBlock" class="form-text">
+                            Если у вас уже есть аккаунт воспользуйтесь <a href="/Login">входом</a>
+                        </div>
+                    </div>
+                </form>
+            }
+            else
+            {
+                <form class="login-box">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="exampleInputSurName" name="surName" placeholder="Фамилия" value="@Model.RegistrationDto.SurName">
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="exampleInputName" name="name" placeholder="Имя" value="@Model.RegistrationDto.Name">
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="exampleInputMidleName" name="middleName" placeholder="Отчество" value="@Model.RegistrationDto.MiddleName">
+                    </div>
+                    <div class="mb-3">
+                        @if (Model.RegistrationDto.ErrorTel)
+                        {
+                            <label for="errorInputTelephone" class="error">Этот телефон занят!</label>
+                            <input type="tel" class="form-control error" id="exampleInputTelephone" name="telephone" placeholder="Номер телефона" value="@Model.RegistrationDto.Telephone">
+                        }
+                        else
+                        {
+                            <input type="tel" class="form-control" id="exampleInputTelephone" name="telephone" placeholder="Номер телефона" value="@Model.RegistrationDto.Telephone">
+                        }
+                    </div>
+                    <div class="mb-3">
+                        @if (Model.RegistrationDto.ErrorEmail)
+                        {
+                            <label for="errorInputEmail" class="error">Этот Email занят!</label>
+                            <input type="email" class="form-control error" id="exampleInputEmail1" name="email" placeholder="Email" value="@Model.RegistrationDto.Mail">
+                        }
+                        else
+                        {
+                            <input type="email" class="form-control" id="exampleInputEmail1" name="email" placeholder="Email" value="@Model.RegistrationDto.Mail">
+                        }
+                    </div>
+                    <div class="mb-3">
+                        @if (Model.RegistrationDto.ErrorLogin)
+                        {
+                            <label for="errorInputLogin" class="error">Этот логин занят!</label>
+                            <input type="text" class="form-control error" id="exampleInputLogin" name="login" placeholder="Логин" value="@Model.RegistrationDto.Login">
+                        }
+                        else
+                        {
+                            <input type="text" class="form-control error" id="exampleInputLogin" name="login" placeholder="Логин" value="@Model.RegistrationDto.Login">
+                        }
+                    </div>
+                    <div class="mb-3">
+                        <input type="password" id="inputPassword5" class="form-control" aria-describedby="passwordHelpBlock" name="password" placeholder="Пароль">
+                        <div id="passwordHelpBlock" class="form-text">
+                            Ваш пароль должен состоять из 8-20 символов, содержать буквы и цифры и не должен содержать пробелов, специальных символов или эмодзи.
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <button asp-controller="Registration" formmethod="post" type="submit" class="btn btn-primary">Зарегистрироваться</button>
+                        <div id="registerHelpBlock" class="form-text">
+                            Если у вас уже есть аккаунт воспользуйтесь <a href="/Login">входом</a>
+                        </div>
+                    </div>
+                </form>
+            }
+        </div>
+        <div class="col"></div>
+    </div>
+</body>
+</html>

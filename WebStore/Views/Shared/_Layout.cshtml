@@ -1,0 +1,45 @@
+﻿@model WebStore.Models.UserModel
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/css/layout.css" />
+</head>
+<body>
+
+    <header class="green">
+        <img src="..//logo.png" class="imgCorrector" alt="Логотип страницы" />
+    </header>
+
+    <div class="container">
+        <div class="row mb-3">
+            <div class="col-1"><a href="/">Главная</a></div>
+            <div class="col-1"><a href="/Catalog">Каталог</a></div>
+            <div class="col-1"><a href="#">Контакты</a></div>
+            <div class="col-1"><a href="#">Избранное</a></div>
+            <div class="col-1"><a href="/Basket">Корзина</a></div>
+            <div class="col-5"></div>
+            @if (Model ==null || !Model.ID.HasValue)
+            {
+                <div class="col-1"><a href="/Registration">Регистрация</a></div>
+                <div class="col-1"><a href="/Login">Вход</a></div>
+            }
+            else
+            {
+                <div class="col-2"><a href="/Profile">Профиль</a></div>
+            }            
+        </div>
+
+        <div class="container body-content">
+            @RenderBody()
+            <hr />
+            <footer>
+                <p>©  2021. СтройМаг. Все права защищены.</p>
+            </footer>
+        </div>
+    </div>
+</body>
+</html>

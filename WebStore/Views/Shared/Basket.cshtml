@@ -1,0 +1,94 @@
+﻿@model WebStore.Models.UserModel
+@{ Layout = Layout; }
+
+<!DOCTYPE>
+<html>
+<head>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/login.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script>
+        function countProduct(id) {
+            var count = $("#" + id).val();
+            if (count > 0) {
+                $.ajax({
+                    url: '/CountProduct/' + id,
+                    method: 'POST',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ count: count }),
+                    success: function (data) {
+
+                    }
+                });
+            }
+            else if (count==0)
+            {
+                $.ajax({
+                    url: '/RemoveProduct/' + id,
+                    method: 'POST',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                });
+                
+                alert("Товар успешно удалён из корзины.")
+            }
+            else {
+                
+                alert("Невозможно применить значение меньшее 0 к количеству товаров.");
+            }
+            window.location.reload();
+        }
+
+        function costCalculation()
+        {
+            document.getElementById('dataKeeper')
+        }
+    </script>
+</head>
+<body>
+    <h2>Корзина товаров</h2>
+    <hr>
+    <div class="text-center" p-2>
+        <table class="table table-bordered table-striped table-sm">
+            <thead>
+                <tr>
+                    <th>Внешний вид</th>
+                    <th>Название</th>
+                    <th>Стоимость</th>
+                    <th>Количество</th>
+                </tr>
+            </thead>
+            @foreach (var item in Model.BasketResponsetDto.basketResponseDto)
+            {
+                <tr>
+                    @{
+                        string Path = "/imgProduct/" + @item.Key.Id + ".jpg";
+                    }
+                    <td><img src="@Path" alt="Изображение не найдено" onerror="this.src=`/imgProduct/default.png`" width=100 height=100></td>
+                    <td>@item.Key.Name</td>
+                    <td>@item.Key.Price</td>
+                    <td>
+                        <input id="@item.Key.Id" type="number" onchange="countProduct(@item.Key.Id); return false;"
+                               min="0" max="100" value="@item.Value">
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+
+
+    <div class="container">
+        <div class="row mb-3">
+            <div class="col-3">Общий чек: @Model.BasketResponsetDto.costCalculation() руб.</div>
+            <div class="col-8"></div>
+            @if (Model.BasketResponsetDto.basketResponseDto.Count > 0)
+            {
+                <div class="col-1"><a href="/Order">Заказать</a></div>
+            }
+        </div>
+    </div>
+</body>
+</html>

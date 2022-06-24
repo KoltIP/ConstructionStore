@@ -1,0 +1,189 @@
+﻿@model WebStore.Models.UserModel
+@{
+    Layout = Layout;
+}
+
+<!DOCTYPE>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/css/login.css" />
+    <script src="https://yastatic.net/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <title>Профиль</title>
+    <script>
+        function Exit() {
+            $.ajax({
+                type: 'post',
+                url: '../LogOut',
+                success: function (data) {
+                    window.location.assign('/');
+                }
+            });            
+        }
+    </script>
+
+    <script>
+        function Delete() {
+            $.ajax({
+                type: 'delete',
+                url: '',
+                success: function (data) {
+                    window.location.assign('/');
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <hr>
+    <div class="container bootstrap snippets bootdey">
+        <h1 class="text-primary"><span class="glyphicon glyphicon-user">Ваш профиль</span></h1>
+        <hr>
+        <div class="row">
+            <!-- left column -->
+            <div class="col-md-4">
+                <div class="text-center">
+                    <img src="//placehold.it/100" class="avatar img-circle" alt="avatar">
+                    <h6>Загрузить своё фото...</h6>
+
+                    <input type="file" class="form-control">
+                </div>
+            </div>
+
+            <!-- edit form column -->
+            <div class="col-md-4 personal-info">
+
+
+                <form class="form-horizontal" role="form">
+
+                    <div class="form-group">
+                        @if (Model.ProfileDto.Flag)
+                        {
+                            <label class="col-lg-3 control-label">Новое Имя:</label>
+                            <div class="col-lg-8">
+                                <input class="form-control" id="exampleInputName" name="name" type="text" value="@Model.ProfileDto.Name">
+                            </div>
+
+                            <label class="col-lg-3 control-label">Новая Фамилия:</label>
+                            <div class="col-lg-8">
+                                <input class="form-control" id="exampleInputSurName" name="surName" type="text" value="@Model.ProfileDto.Surname">
+                            </div>
+
+                            <label class="col-lg-3 control-label">Новое Отчество:</label>
+                            <div class="col-lg-8">
+                                <input class="form-control" id="exampleInputMidleName" name="patronimic" type="text" value="@Model.ProfileDto.Patronimic">
+                            </div>
+                            @if (Model.ProfileDto.ErrorEmail)
+                            {
+                                <label for="errorInputEmail" class="error">Этот email занят!</label>
+                                <input class="form-control" id="exampleInputEmail1" name="email" type="email" value="@Model.ProfileDto.Email">
+                            }
+                            else
+                            {
+                                <label class="col-lg-3 control-label">Новый Email:</label>
+                                <div class="col-lg-8">
+                                    <input class="form-control" id="exampleInputEmail1" name="email" type="email" value="@Model.ProfileDto.Email">
+                                </div>
+                            }
+
+                            @if (Model.ProfileDto.ErrorTel)
+                            {
+                                <label for="errorInputTelephone" class="error">Этот телефон занят!</label>
+                                <input type="tel" class="form-control error" id="exampleInputTelephone" name="telephone" value="@Model.ProfileDto.Phone">
+                            }
+                            else
+                            {
+                                <label class="col-lg-3 control-label">Новый телефон:</label>
+                                <div class="col-lg-8">
+                                    <input class="form-control" id="exampleInputTelephone" name="telephone" type="tel" value="@Model.ProfileDto.Phone">
+                                </div>
+                            }
+
+                            @if (Model.ProfileDto.ErrorPassword)
+                            {
+                                <label for="errorInputTelephone" class="error">Не верный пароль!</label>
+                                <div class="col-lg-8">
+                                    <input class="form-control" type="password" id="exampleInputOldPassword" name="oldPassword" value=@Model.ProfileDto.OldPassword>
+                                </div>
+
+                                <label class="col-lg-3 control-label">Новый Пароль:</label>
+                                <div class="col-lg-8">
+                                    <input class="form-control" id="exampleInputNewPassword" name="newPassword" type="password" value="@Model.ProfileDto.NewPassword">
+                                </div>}
+                            else
+                            {
+                                <label class="col-lg-3 control-label">Введите старый пароль:</label>
+                                <div class="col-lg-8">
+                                    <input class="form-control" type="password" id="exampleInputOldPassword" placeholder="Старый пароль" name="oldPassword" value="">
+                                </div>
+
+                                <label class="col-lg-3 control-label">Новый Пароль:</label>
+                                <div class="col-lg-8">
+                                    <input class="form-control" type="password" id="exampleInputNewPassword" placeholder="Новый пароль" name="newPassword" value="">
+                                </div>
+                            }
+                            <button asp-controller="Profile" asp-action="ProfilerSave" formmethod="post" class="btn btn-primary">Сохранить</button>
+                        }
+                        else
+                        {
+                            <label class="col-lg-3 control-label">Имя:</label>
+                            <div class="col-lg-8">
+                                <label class="form-control">@Model.ProfileDto.Name</label>
+                            </div>
+
+                            <label class="col-lg-3 control-label">Фамилия:</label>
+                            <div class="col-lg-8">
+                                <label class="form-control">@Model.ProfileDto.Surname</label>
+                            </div>
+
+                            <label class="col-lg-3 control-label">Отчество:</label>
+                            <div class="col-lg-8">
+                                <label class="form-control">@Model.ProfileDto.Patronimic</label>
+                            </div>
+
+                            <label class="col-lg-3 control-label">Email:</label>
+                            <div class="col-lg-8">
+                                <label class="form-control">@Model.ProfileDto.Email</label>
+                            </div>
+
+                            <label class="col-lg-3 control-label">Телефон:</label>
+                            <div class="col-lg-8">
+                                <label class="form-control">@Model.ProfileDto.Phone</label>
+                            </div>
+
+                            <button class="btn btn-primary">@Html.ActionLink("Изменить данные", "ProfilerChange", null, null, new { @class = "btn btn-primary" })</button>
+                        }
+                    </div>
+
+                </form>
+            </div>
+
+
+            
+
+
+            <div class="col-md-2 personal-info">
+                <div class="form-group">
+                    <a href="#" class="btn btn-primary">Избранное</a>
+                </div>
+                <div class="form-group">
+                    <a href="#" class="btn btn-primary">Мои заказы</a>
+                </div>
+            </div>
+
+            <div class="col-md-2 personal-info">
+                <div class="form-group">
+                    <button class="btn btn-primary" onclick="Exit(); return false;">Выход</button>
+                </div>
+                <div class="form-group">
+                <button class="btn btn-primary" onclick="Delete(); return false;">Удалить</button>
+            </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,233 @@
+﻿@model WebStore.Models.UserModel
+@{ Layout = Layout; }
+<!DOCTYPE>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/css/Catalog.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script>
+        $.ajax({
+            url: '/CatalogCategories',
+            method: 'get',
+            dataType: 'json',
+            contentType: 'application/json',
+            success: function (data) {
+                document.getElementById("category").style.display = 'block';
+                let length = data.length;
+                for (let i = 0; i < length; i++) {
+                    $("#catalogcategory").append('<div class="col-4 mb-3"> <button type="button" class="btn btn-info" onclick="ViewProducts(' + data[i].categoryid + '); return false;">' + data[i].categoryname + '</button> </div>');
+                }
+            }
+        });
+    </script>
+    <script>
+        function ViewProducts(idCategory) {
+            document.getElementById("category").style.display = 'none';
+            if (document.getElementById("addproduct") != undefined) {
+                document.getElementById("addproduct").style.display = 'none';
+            }
+            $.ajax({
+                url: '/CatalogProducts',
+                method: 'get',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: { id: idCategory },
+                success: function (data) {
+                    let length = data.length;
+                    for (let i = 0; i < length; i++) {
+                        $('#catalogproduct').append('<div class="product-item"> <a href="/ViewProduct/' + data[i].productid + '"> <img src="/imgProduct/' + data[i].productid + '.jpg" onerror="this.src=`/imgProduct/default.png`" > </a> <div class="product-list"> <h3>' + data[i].productname + '</h3> <span class="price">₽ ' + data[i].price + '</span> <button id="' + data[i].productid + '" class="button" onclick="PutProductsInBasket(' + data[i].productid + '); return false;">В корзину</button> </div> </div>');
+                    }
+                }
+            });
+            $.ajax({
+                url: '/CatalogProductsFilter',
+                method: 'get',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: { id: idCategory },
+                success: function (data) {
+                    $('#filter').append('<div class="mb-3"> <p class="h2">Фильтры:</p</div>');
+                    let length = data.length;
+                    for (let i = 0; i < length; i++) {
+                        if (data[i].type == 1) {
+                            $('#filter').append('<div> <input class="form-check-input" type="checkbox" value="" id="check_id' + data[i].id + '"> <p class="h5">' + data[i].name + ' (' + data[i].unit + ') </p </div> <div> <input class= "col-5 bg-light p-1 border" id="inputMin_id' + data[i].id + '" type = "number" placeholder = "от ' + data[i].value[1] + '" min="' + data[i].value[1] + '" max="' + data[i].value[0] + '" onchange="CheckFilterType1(' + data[i].id + '); return false;" /> <input class="col-5 bg-light p-1 border" id="inputMax_id' + data[i].id + '" type="number"  placeholder="до ' + data[i].value[0] + '" min="' + data[i].value[1] + '" max="' + data[i].value[0] + '" onchange="CheckFilterType1(' + data[i].id + '); return false;" /> </div>');
+                        } else
+                            if (data[i].type == 2) {
+                                $('#filter').append('<div> <input class="form-check-input" type="checkbox" value="" id="check_id' + data[i].id + '"> <p class="h5">' + data[i].name + '</p </div> <div class="form-check" id="value_to_string"></div>');
+                                for (let j = 0; j < data[i].value.length; j++) {
+                                    $('#value_to_string').append('<div> <input class="form-check-input" type="checkbox" value="" id="checkValue' + j + '_id' + data[i].id + '" onchange="CheckFilterType2('+ j +', ' + data[i].id + ', ' + data[i].value.length + '); return false;"> </div> <div> <label class="form-check-label" for="flexCheckDefault">' + data[i].value[j] + '</label> </div>');
+                                }
+                            } else
+                                if (data[i].type == 3) {
+                                    $('#filter').append('<div> <input class="form-check-input" type="checkbox" value="" id="check_id' + data[i].id + '"> <p class="h5">' + data[i].name + '</p </div> <div class="form-check"> <input class="form-check-input" type="checkbox" value="" id="checkYes_id' + data[i].id + '" onchange="CheckFilterType3(' + data[i].id + '); return false;"> <label class="form-check-label" for="flexCheckDefault"> Есть </label> </div> <div class="form-check"> <input class="form-check-input" type="checkbox" value="" id="checkNo_id' + data[i].id + '" onchange="CheckFilterType3(' + data[i].id + '); return false;"> <label class="form-check-label" for="flexCheckDefault"> Нет </label> </div>');
+                                }
+                    }
+                    $('#filter').append('<div class="mb-3"> <button type="submit" class="btn btn-primary" onclick="Filtration(' + idCategory + '); return false;">Применить</button> <button type="submit" class="btn btn-primary" onclick="FiltrationClear(' + idCategory + '); return false;">Сбросить фильтры</button> </div>');
+                 }
+            });
+        }
+    </script>
+    <script>        
+        function CheckFilterType1(id) {
+            if ((document.getElementById("inputMin_id" + id).value != "") && (document.getElementById("inputMax_id" + id).value != "")) {
+                document.getElementById("check_id" + id).checked = "checked";
+            }else
+                document.getElementById("check_id" + id).checked = "";
+        }
+        function CheckFilterType2(j, id, length) {
+            if (document.getElementById("checkValue" + j + "_id" + id).checked == true) {
+                document.getElementById("check_id" + id).checked = "checked";
+            }else {
+                for (let i = 0; i < length; i++){
+                    if (document.getElementById("checkValue" + i + "_id" + id).checked == true){
+                        return;
+                    } 
+                }  
+             document.getElementById("check_id" + id).checked = "";
+            }
+        }
+        function CheckFilterType3(id) {
+            if (document.getElementById("checkYes_id" + id).checked == true) {
+                document.getElementById("checkNo_id" + id).disabled = "disabled";
+                document.getElementById("check_id" + id).checked = "checked";
+            }else
+                if (document.getElementById("checkNo_id" + id).checked == true){
+                    document.getElementById("checkYes_id" + id).disabled = "disabled";
+                    document.getElementById("check_id" + id).checked = "checked";
+                }else {
+                   document.getElementById("check_id" + id).checked = "";
+                   document.getElementById("checkNo_id" + id).disabled = "";
+                   document.getElementById("checkYes_id" + id).disabled = "";
+                 }
+        }
+    </script>
+    <script>
+        function FiltrationClear(idCategory) {
+            $('#catalogproduct').html("");
+            $('#filter').html("");
+            ViewProducts(idCategory);
+        }
+        function Filtration(idCategory) {
+            $.ajax({
+                url: '/CatalogProductsFilter',
+                method: 'get',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: { id: idCategory },
+                success: function (data) {
+                    let length = data.length;
+                    var filterList = [];
+                    for (let i = 0; i < length; i++) {
+                        if (document.getElementById("check_id" + data[i].id).checked == true) {
+                            if (data[i].type == 1) {
+                                let min = document.getElementById("inputMin_id" + data[i].id).value;
+                                let max = document.getElementById("inputMax_id" + data[i].id).value;
+                                let filter = new Object;
+                                filter.id = data[i].id;
+                                filter.type = data[i].type;
+                                filter.max = max;
+                                filter.min = min;
+                                filterList.push(filter);
+                            } else {
+                                if (data[i].type == 2) {
+                                    for (let j = 0; j < data[i].value.length; j++) {
+                                        if (document.getElementById("checkValue" + j + "_id" + data[i].id).checked == true) {
+                                            let value = data[i].value[j];
+                                            let filter = new Object;
+                                            filter.id = data[i].id;
+                                            filter.type = data[i].type;
+                                            filter.value = value;
+                                            filterList.push(filter);
+                                        }
+                                    }
+                                } else {
+                                    if (data[i].type == 3) {
+                                        if (document.getElementById("checkYes_id" + data[i].id).checked == true) {
+                                            let value = "Есть";
+                                            let filter = new Object;
+                                            filter.id = data[i].id;
+                                            filter.type = data[i].type;
+                                            filter.value = value;
+                                            filterList.push(filter);
+                                        } else {
+                                            if (document.getElementById("checkNo_id" + data[i].id).checked == true) {
+                                                let value = "Нет";
+                                                let filter = new Object;
+                                                filter.id = data[i].id;
+                                                filter.type = data[i].type;
+                                                filter.value = value;
+                                                filterList.push(filter);
+                                            }
+                                        }                                        
+                                    }
+                                }
+                            }
+                        } 
+                    }
+                    $.ajax({
+                        url: '/FiltrationProduct',
+                        method: 'post',
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        data: JSON.stringify(filterList),
+                        success: function (data) {
+                            $('#catalogproduct').html("");
+                            let length = data.length;
+                            if (length == 0) 
+                                $('#catalogproduct').append('<div class="mb-3"> <p class="h3">Нет продуктов, с указанными фильтрами</p</div>')
+                            else
+                                for (let i = 0; i < length; i++) {
+                                    $('#catalogproduct').append('<div class="product-item"> <a href="/ViewProduct/' + data[i].productid + '"> <img src="/imgProduct/' + data[i].productid + '.jpg" onerror="this.src=`/imgProduct/default.png`" > </a> <div class="product-list"> <h3>' + data[i].productname + '</h3> <span class="price">₽ ' + data[i].price + '</span> <button id="' + data[i].productid + '" class="button" onclick="PutProductsInBasket(' + data[i].productid + '); return false;">В корзину</button> </div> </div>');
+                                }
+                                                        
+                        }
+                    });
+                }            
+            });
+        }
+    </script>
+    <script>
+        function PutProductsInBasket(idProduct) 
+        {
+            document.getElementById(idProduct).textContent = "Добавлен в корзину";
+            $.ajax({
+                url: '/AddProductInBasket',
+                method: 'get',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: { idProduct: idProduct }                
+            });
+        }
+    </script>    
+</head>
+<body>
+    <div class="container" id="main">
+        <div class="row">
+            <div class="col-4">
+                <div class="container" id="filter">
+                    <div class="mb-3">
+                        @if (Model != null && Model.Type == 1)
+                        {
+                            <a class="btn btn-danger" id="addproduct" href="/AddProduct">Добавить товар</a>
+                        }                         
+                    </div>
+                </div>
+            </div>
+            <div class="col-8" id="category" style="display:none">
+                <div class="row" id="catalogcategory">
+
+                </div>
+            </div>
+            <div class="col-8">
+                <div class="row" id="catalogproduct">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

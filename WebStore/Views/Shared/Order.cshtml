@@ -1,0 +1,47 @@
+﻿@model WebStore.Models.UserModel
+@{ Layout = Layout; }
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Оформление заказа</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/css/layout.css" />
+    <script>
+        function Success()
+        {
+            alert("Заказ успешно оформлен!");
+            document.location.href = "/";
+            
+        }
+    </script>
+</head>
+<body>
+    <h2>Куда доставить</h2>
+
+    <form>
+        <div class="mb-3">
+            <input type="text" class="form-control" id="country" name="country" placeholder="Страна">
+        </div>
+
+        <div class="mb-3">
+            <input type="text" class="form-control" id="town" name="town" placeholder="Город">
+        </div>
+
+        <div class="mb-3">
+            <input type="text" class="form-control" id="street" name="street" placeholder="Улица">
+        </div>
+
+        <div class="mb-3">
+            <input type="text" class="form-control" id="houseNumber" name="houseNumber" placeholder="Дом">
+        </div>
+
+        <div class="mb-3">
+            <input type="text" class="form-control" id="flatNumber" name="flatNumber" placeholder="Квартира">
+        </div>
+    </form>
+    <button class="align-items-end" onclick="Success(); return false;">Подтвердить</button>
+</body>
+</html>

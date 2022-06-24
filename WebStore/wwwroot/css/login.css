@@ -1,0 +1,9 @@
+﻿.login-box {
+    outline: 2px solid #000000;
+    padding: 20px;
+    text-align: center;
+}
+.error {
+    color: red;
+}
+

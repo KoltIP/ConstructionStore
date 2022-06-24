@@ -1,0 +1,159 @@
+﻿@model WebStore.Models.UserModel
+@{ Layout = Layout; }
+
+<!DOCTYPE>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/css/login.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script>
+        var i = 0;
+        function AddCharacteristic() {
+            $("#ViewCharacteristic").append(`<div class="mb-3">
+                                                <input type="text" class="form-control" name="nameCharacteristic[` + i + `]" id="nameCharacteristic[` + i + `]" placeholder="Название характеристики">
+                                            </div>`);
+            i++;
+        }
+    </script>
+    <script>
+        function ViewCharacteristic() { 
+            $.ajax({
+                url: '/ViewCharacteristic',
+                method: 'get',             
+                dataType: 'json',
+                contentType: 'application/json',
+                data: { category: $('#category').val()  },
+                success: function (data) {
+                    let length = data.length;                    
+                    if (length == 0) {
+                        document.getElementById("error").style.display = 'block';
+
+                    } else {
+                        document.getElementById("error").style.display = 'none';
+                        for (let i = 0; i < length; i++) {
+                            let type = data[i].type;
+                            if (type == 1) {
+                                $("#ViewCharacteristic").append(`<div class="mb-3">
+                                                                    <input type="number" class="form-control" placeholder="`+ data[i].name + `" name="characterictics[` + i + `]">
+                                                                </div>`);
+                            } else if (type == 2) {
+                                $("#ViewCharacteristic").append(`<div class="mb-3">
+                                                                    <input type="text" class="form-control" placeholder="`+ data[i].name + `"name="characterictics[` + i + `]">
+                                                                </div>`);
+                            } else $("#ViewCharacteristic").append(`<div class="mb-3">
+                                                                      <label class="form-check-label" for="flexCheckDefault">`+ data[i].name + `:</label>
+                                                                      <select class="form-select form-select-sm" aria-label=".form-select-sm example" name="characterictics[` + i + `]">
+                                                                        <option selected>Есть/Нет</option>
+                                                                        <option value="1">Есть</option>
+                                                                        <option value="2">Нет</option>
+                                                                      </select>
+                                                                    </div>`);
+                        }
+                    }                        
+                }
+            });
+        }        
+    </script>
+</head>
+<body>
+    @if (Model == null)
+    {
+    <div class="d-grid gap-3 d-md-block">
+        @Html.ActionLink("Добавление товара", "ViewAddProduct", null, null, new { @class = "btn btn-primary" })
+        @Html.ActionLink("Добавление категории", "ViewAddCategory", null, null, new { @class = "btn btn-primary" })
+        @Html.ActionLink("Добавление характеристики", "ViewAddCharacteristic", null, null, new { @class = "btn btn-primary" })
+    </div>
+    }
+    else
+    {
+        if(Model.ProductDto.ViewAddProduct)
+        {
+            <form class="login-box">                
+                <div class="mb-3">
+                    <input type="text" class="form-control" name="name" placeholder="Наименование">
+                </div>
+                <div class="mb-3">
+                    <input type="number" class="form-control" name="price" placeholder="Цена">
+                </div>
+                <div class="mb-3">
+                    <textarea class="form-control" placeholder="Описание" name="description" style="height: 100px"></textarea>
+                </div>
+                <div class="mb-3">
+                    <input type="text" class="form-control" name="availability" placeholder="Сколько штук в наличии">
+                </div>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Категория" aria-describedby="button-addon2" id="category" name="category">
+                    <button class="btn btn-outline-secondary" onclick="ViewCharacteristic(); return false;">Характеристики</button>
+                </div>
+                <div id="error" style="display:none">
+                    <div class="alert alert-danger d-flex align-items-center" role="alert">
+                        <div>
+                            Характеристики либо не существует, либо у нее не давлены характеристики!
+                        </div>
+                    </div>
+                </div>                
+                <div class="mb-3" id="ViewCharacteristic">
+
+                </div>
+                <div class="mb-3">
+                    <button asp-controller="Product" formmethod="post" type="submit" class="btn btn-primary">Добавить</button>
+                </div> 
+            </form>
+        }
+        if (Model.ProductDto.ViewAddCategory)
+        {
+            <form class="login-box"> 
+                @if (Model.ProductDto.ErrorCharacteristic)
+                 {
+                    <div class="alert alert-danger d-flex align-items-center" role="alert">
+                    @*<svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill" /></svg>*@
+                        <div>
+                            Ошибка! Одной или несколько характеристик не существуют!
+                        </div>
+                    </div>
+                 }
+                <div class="mb-3">
+                    <input type="text" class="form-control" name="name" placeholder="Название категории">
+                </div>
+                <div class="mb-3" id="ViewCharacteristic">
+
+                </div>
+                <div class="mb-3">
+                    <button class="btn btn-primary" onclick="AddCharacteristic(); return false;">Добавить характеристику</button>
+                </div>
+                <div class="mb-3">
+                    <button asp-controller="Product" formmethod="post" type="submit" class="btn btn-primary">Добавить</button>
+                </div>                
+            </form>
+        }
+        if (Model.ProductDto.ViewAddCharacteristic)
+        {
+            <form class="login-box">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <select class="form-select form-select-sm" aria-label=".form-select-sm example" name="type">
+                            <option selected>Тип характеристики</option>
+                            <option value="1">Числовой</option>
+                            <option value="2">Строковый</option>
+                            <option value="3">Есть/Нет</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" name="name" placeholder="Название">
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" name="unit" placeholder="Единица имерения">
+                    </div>
+                    <div class="mb-3">
+                        <button asp-controller="Product" formmethod="post" type="submit" class="btn btn-primary">Добавить</button>
+                    </div>
+                </div>
+            </form>
+        }
+    }
+</body>
+</html>
